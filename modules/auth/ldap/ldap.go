@@ -35,7 +35,7 @@ var (
 
 // Add a new source (LDAP directory) to the global pool
 func AddSource(name string, host string, port int, usessl bool, binddn string, bindpw string, basedn string, attributes string, filter string, msadsaformat string) {
-	ldaphost := Ldapsource{name, host, port, usessl, basedn, attributes, filter, msadsaformat, true}
+	ldaphost := Ldapsource{name, host, port, usessl, binddn, bindpw, basedn, attributes, filter, msadsaformat, true}
 	Authensource = append(Authensource, ldaphost)
 }
 
