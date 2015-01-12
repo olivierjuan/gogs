@@ -63,11 +63,11 @@ func (ls Ldapsource) SearchEntry(name, passwd string) (string, bool) {
 	}
 	defer l.Close()
 	if ls.BindDN != "" {
-		err = l.Bind(ls.BindDN, ls.BindPW)
-		if err != nil {
-			log.Debug("LDAP Authan failed for %s, reason: %s", ls.BindDN, err.Error())
-			return "", false
-		}
+		l.Bind(ls.BindDN, ls.BindPW)
+		//if err != nil {
+		//	log.Debug("LDAP Authan failed for %s, reason: %s", ls.BindDN, err.Error())
+		//	return "", false
+		//}
 	}
 
 	nx := fmt.Sprintf(ls.MsAdSAFormat, name)
