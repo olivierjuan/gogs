@@ -62,7 +62,7 @@ func (ls Ldapsource) SearchEntry(name, passwd string) (string, bool) {
 		return "", false
 	}
 	defer l.Close()
-	if ls.BindDN != nil {
+	if ls.BindDN != "" {
 		err = l.Bind(ls.BindDN, ls.BindPW)
 		if err != nil {
 			log.Debug("LDAP Authan failed for %s, reason: %s", ls.BindDN, err.Error())
