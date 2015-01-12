@@ -34,7 +34,7 @@ var (
 )
 
 // Add a new source (LDAP directory) to the global pool
-func AddSource(name string, host string, port int, usessl bool, basedn string, attributes string, filter string, msadsaformat string) {
+func AddSource(name string, host string, port int, usessl bool, binddn string, bindpw string, basedn string, attributes string, filter string, msadsaformat string) {
 	ldaphost := Ldapsource{name, host, port, usessl, basedn, attributes, filter, msadsaformat, true}
 	Authensource = append(Authensource, ldaphost)
 }
@@ -62,7 +62,7 @@ func (ls Ldapsource) SearchEntry(name, passwd string) (string, bool) {
 		return "", false
 	}
 	defer l.Close()
-	if ls.bindDN != nil {
+	if ls.BindDN != nil {
 		err = l.Bind(ls.BindDN, ls.BindPW)
 		if err != nil {
 			log.Debug("LDAP Authan failed for %s, reason: %s", ls.BindDN, err.Error())
