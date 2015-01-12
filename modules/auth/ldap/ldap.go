@@ -19,6 +19,8 @@ type Ldapsource struct {
 	Host         string // LDAP host
 	Port         int    // port number
 	UseSSL       bool   // Use SSL
+	BindDN       string // Bind BN
+	BindPW       string // Bind PW
 	BaseDN       string // Base DN
 	Attributes   string // Attribute to search
 	Filter       string // Query filter to validate entry
@@ -60,6 +62,13 @@ func (ls Ldapsource) SearchEntry(name, passwd string) (string, bool) {
 		return "", false
 	}
 	defer l.Close()
+	if ls.bindDN != nil {
+		err = l.Bind(ls.BindDN, ls.BindPW)
+		if err != nil {
+			log.Debug("LDAP Authan failed for %s, reason: %s", ls.BindDN, err.Error())
+			return "", false
+		}
+	}
 
 	nx := fmt.Sprintf(ls.MsAdSAFormat, name)
 	err = l.Bind(nx, passwd)

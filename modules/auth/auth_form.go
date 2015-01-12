@@ -17,6 +17,8 @@ type AuthenticationForm struct {
 	Host              string `form:"host"`
 	Port              int    `form:"port"`
 	UseSSL            bool   `form:"usessl"`
+	BindDN            string `form:"bind_dn"`
+	BindPW            string `form:"bind_pw"`
 	BaseDN            string `form:"base_dn"`
 	Attributes        string `form:"attributes"`
 	Filter            string `form:"filter"`
