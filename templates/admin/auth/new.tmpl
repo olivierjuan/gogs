@@ -40,12 +40,18 @@
                                         <input class="ipt ipt-large ipt-radius {{if .Err_Port}}ipt-error{{end}}" id="port" name="port" value="{{.port}}" />
                                     </div>
                                     <div class="field">
+                                        <label></label>
+                                        <input name="usessl" type="checkbox" />
+                                        <strong>{{.i18n.Tr "admin.auths.enable_tls"}}</strong>
+                                        <br>
+                                    </div>
+                                    <div class="field">
                                         <label class="req" for="bind_dn">{{.i18n.Tr "admin.auths.bind_dn"}}</label>
                                         <input class="ipt ipt-large ipt-radius {{if .Err_BindDN}}ipt-error{{end}}" id="bind_dn" name="bind_dn" value="{{.bind_dn}}" />
                                     </div>
                                     <div class="field">
                                         <label class="req" for="bind_pw">{{.i18n.Tr "admin.auths.bind_pw"}}</label>
-                                        <input class="ipt ipt-large ipt-radius {{if .Err_BindPW}}ipt-error{{end}}" id="bind_pw" name="bind_pw" value="{{.bind_pw}}" />
+                                        <input class="ipt ipt-large ipt-radius {{if .Err_BindPW}}ipt-error{{end}}" id="bind_pw" name="bind_pw" value="{{.bind_pw}}" type="password" />
                                     </div>
                                     <div class="field">
                                         <label class="req" for="base_dn">{{.i18n.Tr "admin.auths.base_dn"}}</label>

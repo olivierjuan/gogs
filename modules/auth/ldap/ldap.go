@@ -8,6 +8,7 @@ package ldap
 
 import (
 	"fmt"
+	"crypto/tls"
 
 	"github.com/gogits/gogs/modules/ldap"
 	"github.com/gogits/gogs/modules/log"
@@ -62,15 +63,34 @@ func (ls Ldapsource) SearchEntry(name, passwd string) (string, bool) {
 		return "", false
 	}
 	defer l.Close()
+	nx := fmt.Sprintf(ls.MsAdSAFormat, name)
+	dn := ls.BaseDN
+	scope := ldap.ScopeWholeSubtree
+	filter := fmt.Sprintf(ls.Filter, name)
+
 	if ls.BindDN != "" {
 		l.Bind(ls.BindDN, ls.BindPW)
-		//if err != nil {
-		//	log.Debug("LDAP Authan failed for %s, reason: %s", ls.BindDN, err.Error())
-		//	return "", false
-		//}
+		if err != nil {
+			log.Debug("LDAP Authan failed for %s, reason: %s", ls.BindDN, err.Error())
+			return "", false
+		}
+		search := ldap.NewSearchRequest(
+			dn,
+			scope, ldap.NeverDerefAliases, 0, 0, false,
+			filter,
+			[]string{},
+			nil)
+		sr, err := l.Search(search)
+		if err != nil {
+			log.Debug("LDAP root Authen OK but not in filter %s", name)
+			return "", false
+		}
+		// extrating DN based on search
+		nx = sr.Entries[0].DN
+		dn = sr.Entries[0].DN
+		scope = ldap.ScopeBaseObject
 	}
 
-	nx := fmt.Sprintf(ls.MsAdSAFormat, name)
 	err = l.Bind(nx, passwd)
 	if err != nil {
 		log.Debug("LDAP Authan failed for %s, reason: %s", nx, err.Error())
@@ -78,9 +98,9 @@ func (ls Ldapsource) SearchEntry(name, passwd string) (string, bool) {
 	}
 
 	search := ldap.NewSearchRequest(
-		ls.BaseDN,
-		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf(ls.Filter, name),
+		dn,
+		scope, ldap.NeverDerefAliases, 0, 0, false,
+		filter,
 		[]string{ls.Attributes},
 		nil)
 	sr, err := l.Search(search)
@@ -98,7 +118,7 @@ func (ls Ldapsource) SearchEntry(name, passwd string) (string, bool) {
 
 func ldapDial(ls Ldapsource) (*ldap.Conn, error) {
 	if ls.UseSSL {
-		return ldap.DialTLS("tcp", fmt.Sprintf("%s:%d", ls.Host, ls.Port), nil)
+		return ldap.DialTLS("tcp", fmt.Sprintf("%s:%d", ls.Host, ls.Port), &tls.Config{InsecureSkipVerify : true})
 	} else {
 		return ldap.Dial("tcp", fmt.Sprintf("%s:%d", ls.Host, ls.Port))
 	}
